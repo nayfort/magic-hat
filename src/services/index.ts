@@ -1,0 +1,1 @@
+export { characterService } from "./character";
