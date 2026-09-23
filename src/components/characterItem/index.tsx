@@ -19,14 +19,14 @@ interface CharacterItemProps {
   onReloadPress: (character: ICharacter) => void;
 }
 
-export const CharacterItem = memo(
-  ({
-    character,
-    colors,
-    isActive,
-    onCharacterPress,
-    onReloadPress,
-  }: CharacterItemProps) => (
+export const CharacterItem = memo(function CharacterItem({
+  character,
+  colors,
+  isActive,
+  onCharacterPress,
+  onReloadPress,
+}: CharacterItemProps) {
+  return (
     <View style={styles.container}>
       <Button style={styles.info} onPress={onCharacterPress}>
         <Image
@@ -54,9 +54,8 @@ export const CharacterItem = memo(
         </View>
       )}
     </View>
-  ),
-  (prevProps, nextProps) => prevProps.isActive === nextProps.isActive,
-);
+  );
+});
 
 const styles = StyleSheet.create({
   container: {

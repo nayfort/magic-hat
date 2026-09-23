@@ -1,9 +1,5 @@
 export type TCharacterHouse =
-  | "Gryffindor"
-  | "Hufflepuff"
-  | "Ravenclaw"
-  | "Slytherin"
-  | "";
+  "Gryffindor" | "Hufflepuff" | "Ravenclaw" | "Slytherin" | "";
 
 export type TCharacterId = string;
 

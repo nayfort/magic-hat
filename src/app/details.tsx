@@ -2,7 +2,7 @@ import { StyleSheet, View } from "react-native";
 import { Image } from "expo-image";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { ThemedText, ThemedView } from "@/components";
-import { ICharacter } from "@/types";
+import { useGuessedCharacters } from "@/store/character";
 import { useColors } from "@/hooks";
 import { TColorSet } from "@/styles/types";
 import { DEFAULT_CHARACTER_IMAGE } from "@/constants";
@@ -10,9 +10,18 @@ import { sh, sw } from "@/utils";
 
 export default function DetailsScreen() {
   const colors = useColors();
-  const params = useLocalSearchParams<{ character: string }>();
-  const character: ICharacter = JSON.parse(params.character);
+  const { id } = useLocalSearchParams<{ id: string }>();
+  const character = useGuessedCharacters().find((item) => item.id === id);
   const styles = getStyles(colors);
+
+  if (!character)
+    return (
+      <ThemedView style={styles.container}>
+        <ThemedText>
+          Character not found. Return to the list and select a character.
+        </ThemedText>
+      </ThemedView>
+    );
 
   return (
     <ThemedView style={styles.container}>

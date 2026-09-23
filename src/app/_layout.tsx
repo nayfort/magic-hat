@@ -1,14 +1,14 @@
-import { useEffect } from "react";
+import { useEffect, ComponentProps } from "react";
 import { Stack } from "expo-router";
-import { NativeStackNavigationOptions } from "@react-navigation/native-stack";
+
 import { useColors } from "@/hooks";
 import { useCharacterActions } from "@/store/character";
 
 export default function RootLayout() {
   const colors = useColors();
-  const { getCharacterIds } = useCharacterActions();
+  const { loadCharacters } = useCharacterActions();
 
-  const screenOptions: NativeStackNavigationOptions = {
+  const screenOptions: ComponentProps<typeof Stack>["screenOptions"] = {
     headerBackVisible: true,
     headerBackTitle: "Back",
     headerStyle: { backgroundColor: colors.main },
@@ -18,8 +18,8 @@ export default function RootLayout() {
   };
 
   useEffect(() => {
-    getCharacterIds();
-  }, []);
+    loadCharacters();
+  }, [loadCharacters]);
 
   return (
     <Stack screenOptions={screenOptions}>

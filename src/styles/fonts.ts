@@ -4,15 +4,15 @@ import { sf } from "@/utils";
 export const fonts: TFonts = {
   caption: {
     fontSize: sf(14),
-    fontWeight: "regular",
+    fontWeight: "400",
   },
   default: {
     fontSize: sf(16),
-    fontWeight: "regular",
+    fontWeight: "400",
   },
   subtitle: {
     fontSize: sf(20),
-    fontWeight: "semibold",
+    fontWeight: "600",
   },
   title: {
     fontSize: sf(28),

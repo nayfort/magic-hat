@@ -5,7 +5,7 @@ import { TColorSet } from "@/styles/types";
 import { useColors } from "@/hooks";
 import { sh, sw } from "@/utils";
 
-interface ISearchBarProps extends TextInputProps {}
+type ISearchBarProps = TextInputProps;
 
 export const SearchBar = ({ placeholder, ...props }: ISearchBarProps) => {
   const colors = useColors();

@@ -1,7 +1,13 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { FlatList, StyleSheet, View } from "react-native";
 import { router } from "expo-router";
-import { CharacterItem, ScoreBoard, SearchBar, ThemedView } from "@/components";
+import {
+  CharacterItem,
+  ScoreBoard,
+  SearchBar,
+  ThemedView,
+  ThemedText,
+} from "@/components";
 import {
   useActiveCharacter,
   useCharacterActions,
@@ -18,33 +24,15 @@ export default function ListTab() {
   const { setActiveCharacter } = useCharacterActions();
 
   const [searchText, setSearchText] = useState("");
-  const [filteredCharacters, setFilteredCharacters] = useState<ICharacter[]>(
-    [],
+
+  const filteredCharacters = guessedCharacters.filter((character) =>
+    character.name.toLowerCase().includes(searchText.trim().toLowerCase()),
   );
-
-  useEffect(() => {
-    if (!guessedCharacters.length) {
-      setSearchText("");
-      setFilteredCharacters([]);
-    }
-  }, [guessedCharacters.length]);
-
-  const search = (text: string) => {
-    setSearchText(text);
-    if (!text) {
-      setFilteredCharacters([]);
-      return;
-    }
-    const filtered = guessedCharacters.filter((character) =>
-      character.name.toLowerCase().includes(text.toLowerCase()),
-    );
-    setFilteredCharacters(filtered);
-  };
 
   const toDetails = (character: ICharacter) =>
     router.navigate({
       pathname: "/details",
-      params: { character: JSON.stringify(character) },
+      params: { id: character.id },
     });
 
   const renderItem = useCallback(
@@ -57,7 +45,7 @@ export default function ListTab() {
         onReloadPress={setActiveCharacter}
       />
     ),
-    [activeCharacter.id],
+    [activeCharacter.id, colors, setActiveCharacter],
   );
 
   const separator = useCallback(() => <View style={styles.separator} />, []);
@@ -70,13 +58,18 @@ export default function ListTab() {
           autoCorrect={false}
           placeholder={"Filter characters..."}
           value={searchText}
-          onChangeText={search}
+          onChangeText={setSearchText}
         />
       </View>
       <FlatList
         contentContainerStyle={styles.list}
-        data={
-          filteredCharacters.length ? filteredCharacters : guessedCharacters
+        data={filteredCharacters}
+        ListEmptyComponent={
+          <ThemedText>
+            {searchText.trim()
+              ? "No matching characters."
+              : "Make your first guess to see characters here."}
+          </ThemedText>
         }
         keyExtractor={(item) => item.id}
         ItemSeparatorComponent={separator}

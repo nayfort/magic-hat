@@ -13,7 +13,7 @@ interface IScoreState {
   };
 }
 
-const useScoreStore = create<IScoreState>((set) => ({
+export const useScoreStore = create<IScoreState>((set) => ({
   score: {
     total: 0,
     success: 0,
@@ -24,16 +24,16 @@ const useScoreStore = create<IScoreState>((set) => ({
       set(({ score }) => ({
         score: {
           ...score,
-          total: ++score.total,
-          success: ++score.success,
+          total: score.total + 1,
+          success: score.success + 1,
         },
       })),
     incrementFailed: () =>
       set(({ score }) => ({
         score: {
           ...score,
-          total: ++score.total,
-          failed: ++score.failed,
+          total: score.total + 1,
+          failed: score.failed + 1,
         },
       })),
     resetScore: () => set({ score: { total: 0, success: 0, failed: 0 } }),

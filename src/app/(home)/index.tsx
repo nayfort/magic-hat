@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { RefreshControl, ScrollView, StyleSheet, View } from "react-native";
 import { Image } from "expo-image";
 
@@ -13,7 +12,11 @@ import { useColors } from "@/hooks";
 import { TColorSet } from "@/styles/types";
 import { useScoreActions } from "@/store/score";
 import { GuessResult, TCharacterHouse } from "@/types";
-import { useActiveCharacter, useCharacterActions } from "@/store/character";
+import {
+  useActiveCharacter,
+  useCharacterActions,
+  useCharacterStore,
+} from "@/store/character";
 import { DEFAULT_CHARACTER_IMAGE } from "@/constants";
 import { sh, sw } from "@/utils";
 
@@ -27,18 +30,20 @@ export default function HomeTab() {
   const styles = getStyles(colors);
 
   const activeCharacter = useActiveCharacter();
-  const { getRandomCharacter, guessCharacterHouse } = useCharacterActions();
+  const { getRandomCharacter, guessCharacterHouse, loadCharacters } =
+    useCharacterActions();
   const { incrementSuccess, incrementFailed } = useScoreActions();
 
-  const [isRefreshing, setIsRefreshing] = useState(false);
-
+  const isRefreshing = useCharacterStore((state) => state.isLoading);
+  const error = useCharacterStore((state) => state.error);
   const onRefresh = async () => {
-    setIsRefreshing(true);
-    await getRandomCharacter();
-    setIsRefreshing(false);
+    if (isRefreshing) return;
+    if (error || !useCharacterStore.getState().characters.length)
+      await loadCharacters();
+    getRandomCharacter();
   };
 
-  const guess = async (house: TCharacterHouse) => {
+  const guess = (house: TCharacterHouse) => {
     if (isRefreshing) {
       return;
     }
@@ -53,12 +58,15 @@ export default function HomeTab() {
         incrementFailed();
         break;
     }
-    await getRandomCharacter();
+    getRandomCharacter();
   };
 
   return (
     <ThemedView style={styles.container}>
       <ScoreBoard />
+      {error ? (
+        <ThemedText accessibilityRole="alert">{error}</ThemedText>
+      ) : null}
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.character}
@@ -76,11 +84,13 @@ export default function HomeTab() {
       <View style={styles.buttons}>
         <View style={styles.buttonsRow}>
           <HouseButton
+            disabled={isRefreshing || activeCharacter.isGuessed}
             source={gryffindor}
             title={"Gryffindor"}
             onPress={() => guess("Gryffindor")}
           />
           <HouseButton
+            disabled={isRefreshing || activeCharacter.isGuessed}
             source={slytherin}
             title={"Slytherin"}
             onPress={() => guess("Slytherin")}
@@ -88,17 +98,23 @@ export default function HomeTab() {
         </View>
         <View style={styles.buttonsRow}>
           <HouseButton
+            disabled={isRefreshing || activeCharacter.isGuessed}
             source={ravenclaw}
             title={"Ravenclaw"}
             onPress={() => guess("Ravenclaw")}
           />
           <HouseButton
+            disabled={isRefreshing || activeCharacter.isGuessed}
             source={hufflepuff}
             title={"Hufflepuff"}
             onPress={() => guess("Hufflepuff")}
           />
         </View>
-        <Button style={styles.notInHouseButton} onPress={() => guess("")}>
+        <Button
+          disabled={isRefreshing || activeCharacter.isGuessed}
+          style={styles.notInHouseButton}
+          onPress={() => guess("")}
+        >
           <ThemedText type={"subtitle"}>Not in house</ThemedText>
         </Button>
       </View>
@@ -118,7 +134,7 @@ const getStyles = (colors: TColorSet) =>
     },
     character: {
       alignItems: "center",
-      flex: 1,
+      flexGrow: 1,
       justifyContent: "center",
     },
     characterImage: {

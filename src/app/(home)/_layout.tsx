@@ -1,5 +1,5 @@
 import { Tabs } from "expo-router";
-import { BottomTabNavigationOptions } from "@react-navigation/bottom-tabs";
+import { BottomTabNavigationOptions } from "expo-router/js-tabs";
 import { useColors } from "@/hooks";
 import { Button, TabBarIcon, ThemedText } from "@/components";
 import { useScoreActions } from "@/store/score";
